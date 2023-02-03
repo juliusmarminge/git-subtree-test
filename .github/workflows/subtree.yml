@@ -1,0 +1,39 @@
+name: subtree-matrix
+on:
+  push:
+    branches:
+      - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  sync-downstream:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        path: [app1, app2, app3]
+
+    name: Update downstream ${{ matrix.path }} package
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set `shared-workspace-lockfile` to false
+        run: |
+          echo "shared-workspace-lockfile=false" >> .npmrc
+
+      - name: Install dependencies
+        run: |
+          pnpm install
+
+      - name: Sync downstream
+        uses: nxtlvlsoftware/git-subtree-action@1.1
+        with:
+          repo: "juliusmarminge/git-subtree-test-${{ matrix.path }}"
+          path: "apps/${{ matrix.path }}"
+          deploy_key: ${{ secrets.TRPC_DEPLOY_TOKEN }}
+          force: true # will force push to the downstream repository
