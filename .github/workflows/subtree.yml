@@ -62,6 +62,10 @@ jobs:
         run: |
           git status
 
+      - name: Commit changes
+        run: |
+          git add . && git commit -m "chore: sync lockfiles"
+
       - name: Sync downstream
         uses: nxtlvlsoftware/git-subtree-action@1.1
         with:
