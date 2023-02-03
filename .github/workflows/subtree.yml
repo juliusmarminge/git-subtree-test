@@ -54,6 +54,14 @@ jobs:
         run: |
           pnpm install
 
+      - name: See if lockfile exists
+        run: |
+          cat apps/${{ matrix.path }}/pnpm-lock.yaml
+
+      - name: Check git status
+        run: |
+          git status
+
       - name: Sync downstream
         uses: nxtlvlsoftware/git-subtree-action@1.1
         with:
